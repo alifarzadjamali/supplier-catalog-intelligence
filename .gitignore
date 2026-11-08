@@ -1,0 +1,10 @@
+# Local inputs, generated reports, and model files stay out of the public repo.
+data/
+artifacts/
+reports/
+models/
+.venv/
+__pycache__/
+.env
+.env.*
+!.env.example
