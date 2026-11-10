@@ -277,6 +277,11 @@ def write_report(out, rows, inventory_rows, errors, assumptions):
             writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
             writer.writeheader()
             writer.writerows(rows)
+        review = [row for row in rows if row["review_status"] == "needs review"]
+        with open(out / "review_queue.csv", "w", newline="", encoding="utf-8-sig") as stream:
+            writer = csv.DictWriter(stream, fieldnames=["supplier", "sku", "name", "issues", "evidence"])
+            writer.writeheader()
+            writer.writerows({key: row[key] for key in writer.fieldnames} for row in review)
     from openpyxl import Workbook
     book = Workbook()
     sheet = book.active
