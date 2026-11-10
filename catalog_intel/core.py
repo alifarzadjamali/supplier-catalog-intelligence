@@ -53,6 +53,17 @@ def norm_key(value):
     return ALIASES.get(key, key)
 
 
+def labelled_row(line):
+    if not line.startswith("PRODUCT |"):
+        return None
+    values = {}
+    for part in line.split("|")[1:]:
+        if "=" in part:
+            key, value = part.split("=", 1)
+            values[norm_key(key)] = value.strip()
+    return values
+
+
 def record(supplier, path, values, locations, method):
     raw = {field: text(values.get(field)) for field in FIELDS}
     currency_aliases = {"£": "GBP", "$": "USD", "€": "EUR"}
@@ -140,13 +151,9 @@ def read_pdf(path, rel, supplier):
             lines = [line.strip() for line in page.get_text().splitlines() if line.strip()]
             for line_number, line in enumerate(lines, 1):
                 # The starter parser expects a labelled, pipe-delimited product row.
-                if not line.startswith("PRODUCT |"):
+                values = labelled_row(line)
+                if values is None:
                     continue
-                values = {}
-                for part in line.split("|")[1:]:
-                    if "=" in part:
-                        key, value = part.split("=", 1)
-                        values[norm_key(key)] = value.strip()
                 locations = {key: f"page {page_number}, text line {line_number}" for key in values}
                 result = record(supplier, rel, values, locations, "pdf text")
                 if result:
@@ -166,8 +173,8 @@ def read_image(path, rel, supplier):
         # OCR lines use the same explicit row format as digital PDFs.
         for line_number, words in enumerate(lines.values(), 1):
             line = " ".join(words)
-            if line.startswith("PRODUCT |"):
-                values = dict((norm_key(k), v.strip()) for part in line.split("|")[1:] if "=" in part for k, v in [part.split("=", 1)])
+            values = labelled_row(line)
+            if values is not None:
                 result = record(supplier, rel, values, {k: f"OCR line {line_number}" for k in values}, "tesseract OCR")
                 if result:
                     yield result
