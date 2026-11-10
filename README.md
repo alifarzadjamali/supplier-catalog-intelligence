@@ -2,6 +2,28 @@
 
 A source-linked comparison workflow for interior products. It reads CSV cells, Excel cells, and text from digital PDFs. Scanned images can be read with optional Tesseract OCR. See [PROPOSAL.md](PROPOSAL.md) for the wider plan.
 
+```mermaid
+flowchart LR
+    A[CSV and Excel] --> D[Extract products]
+    B[Digital PDFs] --> D
+    C[Scans with OCR] --> D
+    D --> E[Keep file, page, row or cell evidence]
+    E --> F[Normalize prices, packs and lead times]
+    F --> G[Group comparable options]
+    G --> H[Calculate delivered totals]
+    H --> I[Comparison and review queue]
+```
+
+### What the team sees
+
+| Option | Unit price | Shipping | Delivered total for 4 | Review |
+| --- | ---: | ---: | ---: | --- |
+| Supplier A · A-00 | £90 | £15 | **£375** | Ready |
+| Supplier B · B-00 | £94 | £15 | £391 | Ready |
+| Supplier C · C-00 | £98 | Unknown | **Unknown** | Check delivery fee |
+
+These are invented demo rows. The report links each input value back to its source location. It never treats a missing delivery fee as free shipping.
+
 ## Try it
 
 ```powershell
@@ -10,7 +32,7 @@ python scripts/make_demo.py
 catalog-intel demo/config.json -o demo/output
 ```
 
-The invented demo has 36 chairs from three suppliers. Open `demo/output/comparison.xlsx` or `comparison.csv`, then check `summary.md`, `manifest.json`, `assumptions.json`, and `ingestion_errors.json`. Missing shipping stays unknown, so those rows have no delivered total. Every populated input field has a file and cell, row, or page reference in the `evidence` column.
+The invented demo has 36 chairs from three suppliers. Open `demo/output/comparison.xlsx` or `comparison.csv`, then check `summary.md`, `review_queue.csv`, `manifest.json`, `assumptions.json`, and `ingestion_errors.json`. Missing shipping stays unknown, so those rows have no delivered total. Every populated input field has a file and cell, row, or page reference in the `evidence` column.
 
 ## Use your own files
 
