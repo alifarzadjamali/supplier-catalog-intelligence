@@ -75,6 +75,15 @@ def lead_days(value):
     return start * factor, end * factor
 
 
+def match_value(field, value):
+    value = value.casefold().strip()
+    if field == "dimensions":
+        value = re.sub(r"\s+", "", value.replace("×", "x"))
+    else:
+        value = re.sub(r"\s+", " ", value)
+    return value
+
+
 def record(supplier, path, values, locations, method):
     raw = {field: text(values.get(field)) for field in FIELDS}
     currency_aliases = {"£": "GBP", "$": "USD", "€": "EUR"}
@@ -234,7 +243,7 @@ def compare(products, quantity, target_currency, rates, tax_rate):
     for index, product in enumerate(products):
         raw = product["raw"]
         # Exact specifications are the baseline. Images never establish equivalence.
-        key = tuple(raw[k].casefold() for k in ("category", "material", "finish", "dimensions", "variant", "pack_size"))
+        key = tuple(match_value(k, raw[k]) for k in ("category", "material", "finish", "dimensions", "variant", "pack_size"))
         if not all(key[:4]):
             key = ("unmatched", index)
             product["issues"].append("insufficient specs for matching")
