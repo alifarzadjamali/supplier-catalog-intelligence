@@ -149,13 +149,25 @@ def read_pdf(path, rel, supplier):
     with pymupdf.open(path) as doc:
         for page_number, page in enumerate(doc, 1):
             lines = [line.strip() for line in page.get_text().splitlines() if line.strip()]
+            method = "pdf text"
+            if not lines:
+                try:
+                    import pytesseract
+                    from PIL import Image
+                    import io
+                    pix = page.get_pixmap(matrix=pymupdf.Matrix(2, 2))
+                    image = Image.open(io.BytesIO(pix.tobytes("png")))
+                    lines = [line.strip() for line in pytesseract.image_to_string(image).splitlines() if line.strip()]
+                    method = "pdf page OCR"
+                except (ImportError, FileNotFoundError) as exc:
+                    raise RuntimeError(f"Page {page_number} has no text; install Tesseract OCR") from exc
             for line_number, line in enumerate(lines, 1):
                 # The starter parser expects a labelled, pipe-delimited product row.
                 values = labelled_row(line)
                 if values is None:
                     continue
                 locations = {key: f"page {page_number}, text line {line_number}" for key in values}
-                result = record(supplier, rel, values, locations, "pdf text")
+                result = record(supplier, rel, values, locations, method)
                 if result:
                     yield result
 
