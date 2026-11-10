@@ -89,10 +89,20 @@ def record(supplier, path, values, locations, method):
 
 def read_csv(path, rel, supplier):
     with open(path, newline="", encoding="utf-8-sig") as stream:
-        reader = csv.reader(stream)
-        headers = next(reader)
+        sample = stream.read(4096)
+        stream.seek(0)
+        try:
+            dialect = csv.Sniffer().sniff(sample, delimiters=",;\t")
+        except csv.Error:
+            dialect = csv.excel
+        reader = csv.reader(stream, dialect)
+        headers = next(reader, None)
+        if not headers:
+            return
         keys = [norm_key(h) for h in headers]
         for row_number, row in enumerate(reader, 2):
+            if not any(text(cell) for cell in row):
+                continue
             values = dict(zip(keys, row))
             locations = {key: f"row {row_number}, column {i + 1}" for i, key in enumerate(keys)}
             result = record(supplier, rel, values, locations, "csv cell")
