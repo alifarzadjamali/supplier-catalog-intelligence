@@ -22,13 +22,17 @@ def sha256(path):
 
 def inventory(root, sources):
     entries = []
+    seen = set()
     for source in sources:
         supplier = source["supplier"]
         for item in source["files"]:
             path = (root / item["path"]).resolve()
             if not path.is_file() or not path.is_relative_to(root.resolve()):
                 raise ValueError(f"Missing or outside project: {item['path']}")
-            entries.append({"supplier": supplier, "path": item["path"], "sha256": sha256(path), "modified_utc": datetime.fromtimestamp(path.stat().st_mtime, timezone.utc).isoformat(), "access_terms": item.get("access_terms", "unknown"), "reuse_terms": item.get("reuse_terms", "unknown")})
+            if path in seen:
+                raise ValueError(f"File listed more than once: {item['path']}")
+            seen.add(path)
+            entries.append({"supplier": supplier, "path": item["path"], "sha256": sha256(path), "bytes": path.stat().st_size, "format": path.suffix.lower(), "modified_utc": datetime.fromtimestamp(path.stat().st_mtime, timezone.utc).isoformat(), "access_terms": item.get("access_terms", "unknown"), "reuse_terms": item.get("reuse_terms", "unknown")})
     return entries
 
 
