@@ -55,6 +55,9 @@ def norm_key(value):
 
 def record(supplier, path, values, locations, method):
     raw = {field: text(values.get(field)) for field in FIELDS}
+    currency_aliases = {"£": "GBP", "$": "USD", "€": "EUR"}
+    if raw["currency"]:
+        raw["currency"] = currency_aliases.get(raw["currency"], raw["currency"].upper())
     evidence = {field: {"file": path, "location": locations.get(field, "unknown"), "method": method} for field in FIELDS if raw[field]}
     issues = []
     if not raw["sku"] and not raw["name"]:
