@@ -1,0 +1,13 @@
+sku,name,category,material,finish,dimensions,variant,pack_size,currency,unit_price,moq,availability,delivery_charge,delivery_condition,lead_time_days,image
+A-00,Studio dining chair 1,dining chair,oak,natural,48x52x78 cm,standard,1,GBP,90,1,in stock,15,per order,5-8,
+A-01,Studio dining chair 2,dining chair,ash,black,48x52x78 cm,standard,1,GBP,93,1,in stock,16,per order,5-8,
+A-02,Studio dining chair 3,dining chair,walnut,natural,48x52x78 cm,standard,1,GBP,96,1,in stock,17,per order,5-8,
+A-03,Studio dining chair 4,dining chair,oak,black,48x52x78 cm,standard,1,GBP,99,1,in stock,18,per order,5-8,
+A-04,Studio dining chair 5,dining chair,ash,natural,48x52x78 cm,standard,1,GBP,102,1,in stock,19,per order,5-8,
+A-05,Studio dining chair 6,dining chair,walnut,black,48x52x78 cm,standard,1,GBP,105,1,in stock,20,per order,5-8,
+A-06,Studio dining chair 7,dining chair,oak,natural,48x52x78 cm,standard,1,GBP,108,1,in stock,21,per order,5-8,
+A-07,Studio dining chair 8,dining chair,ash,black,48x52x78 cm,standard,1,GBP,111,1,in stock,22,per order,5-8,
+A-08,Studio dining chair 9,dining chair,walnut,natural,48x52x78 cm,standard,1,GBP,114,1,in stock,23,per order,5-8,
+A-09,Studio dining chair 10,dining chair,oak,black,48x52x78 cm,standard,1,GBP,117,1,in stock,24,per order,5-8,
+A-10,Studio dining chair 11,dining chair,ash,natural,48x52x78 cm,standard,1,GBP,120,1,in stock,25,per order,5-8,
+A-11,Studio dining chair 12,dining chair,walnut,black,48x52x78 cm,standard,1,GBP,123,1,in stock,26,per order,5-8,

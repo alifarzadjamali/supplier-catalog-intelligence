@@ -1,7 +1,36 @@
 # Supplier Catalog Intelligence
 
-An independent project proposal for turning messy supplier files into a useful, source-linked comparison of interior products. The project has not started yet. See [PROPOSAL.md](PROPOSAL.md) for the problem, planned approach, data, and evaluation.
+A source-linked comparison workflow for interior products. It reads CSV cells, Excel cells, and text from digital PDFs. Scanned images can be read with optional Tesseract OCR. See [PROPOSAL.md](PROPOSAL.md) for the wider plan.
 
-The idea is inspired by public [interior design product-entry](https://www.upwork.com/freelance-jobs/apply/Automation-expert-needed_~022107401280610192084/) and [supplier price-comparison](https://www.upwork.com/freelance-jobs/apply/Procurement-Pricing-Data-Assistant-Google-Sheets-Pharmacy-Supply-Chain_~022108870319263215448/) briefs. This is an independent portfolio project, not work commissioned by either client.
+## Try it
 
-Code added later can be used under the [MIT License](LICENSE). External datasets and supplier documents keep their own terms.
+```powershell
+python -m pip install -e .
+python scripts/make_demo.py
+catalog-intel demo/config.json -o demo/output
+```
+
+The invented demo has 36 chairs from three suppliers. Open `demo/output/comparison.xlsx` or `comparison.csv`, then check `summary.md`, `manifest.json`, `assumptions.json`, and `ingestion_errors.json`. Missing shipping stays unknown, so those rows have no delivered total. Every populated input field has a file and cell, row, or page reference in the `evidence` column.
+
+## Use your own files
+
+Copy `demo/config.json` as a template. Paths are relative to the config file. Set each supplier and file's access and reuse terms. Put your quantity, target currency, conversion rates, rate date, and tax assumption in `comparison`. Rates mean one unit of source currency in target currency. Record real rates and dates yourself; the app does not fetch live rates. Private quotes should stay outside this repository.
+
+CSV and XLSX files should have a header row. Useful columns are `sku`, `name`, `category`, `material`, `finish`, `dimensions`, `variant`, `pack_size`, `currency`, `unit_price`, `moq`, `availability`, `delivery_charge`, `delivery_condition`, `lead_time_days`, and `image`. Price is per pack; `pack_size` is units per pack. Shipping is per order. Delivery charge `0` means explicitly free; blank means unknown. Lead time is days or a range such as `5-8`.
+
+Digital PDF rows currently need this form on one text line:
+
+```text
+PRODUCT | sku=ABC-1 | name=Oak chair | category=dining chair | material=oak | finish=natural | dimensions=48x52x78 cm | variant=standard | pack_size=1 | currency=GBP | unit_price=120 | moq=1 | delivery_charge=20 | lead_time_days=5-8
+```
+
+For image OCR, install `pip install -e .[ocr]` and the Tesseract executable. OCR errors are reported in `ingestion_errors.json`. OCR text still needs the labelled row format. This is an explicit baseline, not a general visual catalogue model. Product images are retained as references when provided, but are not matched automatically. Matching requires exact category, material, finish, dimensions, variant, and pack size; a shared group is a comparison suggestion. Output includes review flags for missing facts. There is no live supplier data or claimed model benchmark yet.
+
+## Checks
+
+```powershell
+python -m pip install -e .[test]
+python -m pytest
+```
+
+This independent portfolio project is not affiliated with the clients who inspired the proposal. External source terms remain with their owners.

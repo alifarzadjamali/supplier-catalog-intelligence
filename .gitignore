@@ -1,10 +1,6 @@
-# Local inputs, generated reports, and model files stay out of the public repo.
-data/
-artifacts/
-reports/
-models/
-.venv/
 __pycache__/
-.env
-.env.*
-!.env.example
+*.pyc
+*.egg-info/
+.pytest_cache/
+demo/output/
+private/

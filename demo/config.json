@@ -1,0 +1,44 @@
+{
+  "sources": [
+    {
+      "supplier": "Supplier A",
+      "files": [
+        {
+          "path": "supplier_a.csv",
+          "access_terms": "invented demo",
+          "reuse_terms": "MIT project fixture"
+        }
+      ]
+    },
+    {
+      "supplier": "Supplier B",
+      "files": [
+        {
+          "path": "supplier_b.xlsx",
+          "access_terms": "invented demo",
+          "reuse_terms": "MIT project fixture"
+        }
+      ]
+    },
+    {
+      "supplier": "Supplier C",
+      "files": [
+        {
+          "path": "supplier_c.pdf",
+          "access_terms": "invented demo",
+          "reuse_terms": "MIT project fixture"
+        }
+      ]
+    }
+  ],
+  "comparison": {
+    "quantity": 4,
+    "target_currency": "GBP",
+    "rates_to_target": {
+      "GBP": 1
+    },
+    "rate_date": "2026-11-10",
+    "tax_rate": 0,
+    "tax_note": "Demo assumes no added tax; prices are invented"
+  }
+}
