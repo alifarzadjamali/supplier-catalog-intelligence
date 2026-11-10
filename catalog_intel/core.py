@@ -206,7 +206,15 @@ def ingest(root, sources):
                 errors.append(f"Unsupported file: {rel}")
                 continue
             try:
-                products.extend(reader(path, rel, source["supplier"]))
+                for product in reader(path, rel, source["supplier"]):
+                    image_ref = product["raw"]["image"]
+                    if image_ref:
+                        image_path = (root / image_ref).resolve()
+                        if not image_path.is_file() or not image_path.is_relative_to(root.resolve()):
+                            product["issues"].append("image reference missing or outside project")
+                        else:
+                            product["image_sha256"] = sha256(image_path)
+                    products.append(product)
             except Exception as exc:
                 errors.append(f"{rel}: {exc}")
     return products, errors
