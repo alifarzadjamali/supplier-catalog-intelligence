@@ -64,6 +64,17 @@ def labelled_row(line):
     return values
 
 
+def lead_days(value):
+    match = re.fullmatch(r"\s*(\d+)(?:\s*[-–]\s*(\d+))?\s*(days?|weeks?)?\s*", value, re.I)
+    if not match:
+        return None
+    start, end = int(match.group(1)), int(match.group(2) or match.group(1))
+    if end < start:
+        return None
+    factor = 7 if (match.group(3) or "").lower().startswith("week") else 1
+    return start * factor, end * factor
+
+
 def record(supplier, path, values, locations, method):
     raw = {field: text(values.get(field)) for field in FIELDS}
     currency_aliases = {"£": "GBP", "$": "USD", "€": "EUR"}
@@ -93,12 +104,10 @@ def record(supplier, path, values, locations, method):
         issues.append("delivery charge unknown")
     elif shipping is None or shipping < 0:
         issues.append("invalid delivery charge")
-    lead = re.fullmatch(r"\s*(\d+)(?:\s*[-–]\s*(\d+))?\s*", raw["lead_time_days"])
+    lead = lead_days(raw["lead_time_days"])
     if not lead:
         issues.append("lead time unknown or invalid")
-    elif lead.group(2) and int(lead.group(2)) < int(lead.group(1)):
-        issues.append("invalid lead time range")
-    return {"supplier": supplier, "raw": raw, "evidence": evidence, "issues": issues, "normalized": {"unit_price": str(price) if price is not None and price >= 0 else None, "pack_size": int(pack) if pack and pack > 0 and pack == int(pack) else None, "moq": int(moq) if moq and moq > 0 and moq == int(moq) else None, "delivery_charge": str(shipping) if shipping is not None and shipping >= 0 else None, "lead_min_days": int(lead.group(1)) if lead else None, "lead_max_days": int(lead.group(2) or lead.group(1)) if lead else None}}
+    return {"supplier": supplier, "raw": raw, "evidence": evidence, "issues": issues, "normalized": {"unit_price": str(price) if price is not None and price >= 0 else None, "pack_size": int(pack) if pack and pack > 0 and pack == int(pack) else None, "moq": int(moq) if moq and moq > 0 and moq == int(moq) else None, "delivery_charge": str(shipping) if shipping is not None and shipping >= 0 else None, "lead_min_days": lead[0] if lead else None, "lead_max_days": lead[1] if lead else None}}
 
 
 def read_csv(path, rel, supplier):
